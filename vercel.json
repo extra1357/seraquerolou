@@ -1,0 +1,8 @@
+{
+  "version": 2,
+  "routes": [
+    { "src": "/api/noticias", "dest": "/api/noticias.ts" },
+    { "src": "/api/coletar", "dest": "/api/coletar.ts" },
+    { "src": "/(.*)", "dest": "/public/$1" }
+  ]
+}

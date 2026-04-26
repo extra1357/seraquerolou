@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Agência Notícias</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:        #0a0a0b;
+      --surface:   #111114;
+      --surface2:  #18181d;
+      --border:    #222228;
+      --border2:   #2e2e38;
+      --red:       #e63946;
+      --red-dim:   #b52d38;
+      --gold:      #c9a84c;
+      --text:      #f0f0f0;
+      --muted:     #888898;
+      --subtle:    #444458;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'IBM Plex Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── NOISE OVERLAY ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.4;
+    }
+
+    /* ── HEADER ── */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      background: rgba(10,10,11,0.92);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 32px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+    }
+
+    .logo-mark {
+      font-family: 'Playfair Display', serif;
+      font-size: 26px;
+      font-weight: 900;
+      color: var(--text);
+      letter-spacing: -0.5px;
+    }
+
+    .logo-mark em {
+      color: var(--red);
+      font-style: normal;
+    }
+
+    .logo-edition {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      color: var(--subtle);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      border: 1px solid var(--border2);
+      padding: 2px 6px;
+      border-radius: 3px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .live-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 1px;
+    }
+
+    .live-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #2ecc71;
+      animation: pulse-green 2s infinite;
+    }
+
+    @keyframes pulse-green {
+      0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(46,204,113,0.4); }
+      50% { opacity: 0.6; box-shadow: 0 0 0 5px rgba(46,204,113,0); }
+    }
+
+    .btn-coletar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--red);
+      color: #fff;
+      border: none;
+      padding: 9px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .btn-coletar:hover { background: var(--red-dim); }
+    .btn-coletar:active { transform: scale(0.97); }
+    .btn-coletar:disabled { background: var(--subtle); cursor: not-allowed; transform: none; }
+
+    /* ── HERO TICKER ── */
+    .ticker-wrap {
+      background: var(--red);
+      overflow: hidden;
+      height: 34px;
+      display: flex;
+      align-items: center;
+    }
+
+    .ticker-label {
+      flex-shrink: 0;
+      background: #900;
+      padding: 0 16px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 2px;
+      color: #ffcccc;
+      text-transform: uppercase;
+      z-index: 1;
+    }
+
+    .ticker-track {
+      display: flex;
+      animation: ticker 40s linear infinite;
+      white-space: nowrap;
+    }
+
+    .ticker-track:hover { animation-play-state: paused; }
+
+    @keyframes ticker {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    .ticker-item {
+      font-size: 12px;
+      font-weight: 500;
+      color: #fff;
+      padding: 0 32px;
+      letter-spacing: 0.2px;
+    }
+
+    .ticker-sep {
+      color: rgba(255,255,255,0.4);
+      font-size: 16px;
+    }
+
+    /* ── NAV TABS ── */
+    .nav-wrap {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 64px;
+      z-index: 150;
+    }
+
+    .nav-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 32px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .nav-inner::-webkit-scrollbar { display: none; }
+
+    .tab {
+      flex-shrink: 0;
+      padding: 14px 18px;
+      background: transparent;
+      border: none;
+      border-bottom: 3px solid transparent;
+      color: var(--muted);
+      cursor: pointer;
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.2px;
+      transition: color 0.2s, border-color 0.2s;
+      position: relative;
+    }
+
+    .tab:hover { color: var(--text); }
+
+    .tab.ativo {
+      color: var(--text);
+      border-bottom-color: var(--red);
+      font-weight: 600;
+    }
+
+    .tab-count {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--border2);
+      color: var(--muted);
+      font-size: 10px;
+      font-family: 'IBM Plex Mono', monospace;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      margin-left: 6px;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .tab.ativo .tab-count {
+      background: var(--red);
+      color: #fff;
+    }
+
+    /* ── STATS BAR ── */
+    .stats-bar {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 20px 32px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .stats-left {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .stat-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .stat-value {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      font-family: 'IBM Plex Mono', monospace;
+    }
+
+    .stat-divider {
+      width: 1px;
+      height: 36px;
+      background: var(--border2);
+    }
+
+    .stats-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .sort-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      color: var(--muted);
+      padding: 7px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 12px;
+      transition: all 0.2s;
+    }
+
+    .sort-btn:hover, .sort-btn.ativo {
+      border-color: var(--red);
+      color: var(--text);
+    }
+
+    .view-btn {
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      color: var(--muted);
+      width: 34px;
+      height: 34px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      transition: all 0.2s;
+    }
+
+    .view-btn:hover, .view-btn.ativo {
+      border-color: var(--red);
+      color: var(--text);
+    }
+
+    /* ── STATUS ── */
+    #status {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 10px 32px 0;
+      font-size: 13px;
+      color: var(--red);
+      font-family: 'IBM Plex Mono', monospace;
+      min-height: 32px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* ── GRID ── */
+    #grid {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 20px 32px 60px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 1px;
+      background: var(--border);
+    }
+
+    #grid.view-list {
+      grid-template-columns: 1fr;
+    }
+
+    /* ── CARD ── */
+    .card {
+      background: var(--surface);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      cursor: pointer;
+      transition: background 0.2s;
+      position: relative;
+      overflow: hidden;
+      animation: card-in 0.4s ease both;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: var(--red);
+      transform: scaleY(0);
+      transform-origin: bottom;
+      transition: transform 0.25s ease;
+    }
+
+    .card:hover { background: var(--surface2); }
+    .card:hover::before { transform: scaleY(1); }
+
+    @keyframes card-in {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-cat {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      padding: 3px 8px;
+      border-radius: 3px;
+      border: 1px solid;
+    }
+
+    .cat-politica        { color: #e63946; border-color: rgba(230,57,70,0.3); background: rgba(230,57,70,0.08); }
+    .cat-lula-bolsonaro  { color: #f4a261; border-color: rgba(244,162,97,0.3); background: rgba(244,162,97,0.08); }
+    .cat-senado-camara-stf { color: #457b9d; border-color: rgba(69,123,157,0.3); background: rgba(69,123,157,0.08); }
+    .cat-celebridades    { color: #c77dff; border-color: rgba(199,125,255,0.3); background: rgba(199,125,255,0.08); }
+    .cat-entretenimento  { color: #2ec4b6; border-color: rgba(46,196,182,0.3); background: rgba(46,196,182,0.08); }
+    .cat-default         { color: var(--muted); border-color: var(--border2); background: transparent; }
+
+    .card-num {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      color: var(--subtle);
+    }
+
+    .card-titulo {
+      font-family: 'Playfair Display', serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.35;
+      letter-spacing: -0.2px;
+    }
+
+    .card-resumo {
+      font-size: 13.5px;
+      color: var(--muted);
+      line-height: 1.65;
+      flex: 1;
+      display: -webkit-box;
+      -webkit-line-clamp: 4;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+
+    .card-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .card-fonte {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .card-data {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      color: var(--subtle);
+    }
+
+    .card-link {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--red);
+      text-decoration: none;
+      font-weight: 600;
+      padding: 6px 12px;
+      border: 1px solid rgba(230,57,70,0.25);
+      border-radius: 4px;
+      transition: all 0.2s;
+    }
+
+    .card-link:hover {
+      background: rgba(230,57,70,0.1);
+      border-color: var(--red);
+    }
+
+    /* LIST VIEW */
+    #grid.view-list .card {
+      flex-direction: row;
+      align-items: flex-start;
+      gap: 20px;
+      padding: 20px 24px;
+    }
+
+    #grid.view-list .card-titulo {
+      font-size: 15px;
+    }
+
+    #grid.view-list .card-resumo {
+      -webkit-line-clamp: 2;
+      font-size: 13px;
+    }
+
+    #grid.view-list .card-top {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 6px;
+      min-width: 140px;
+    }
+
+    #grid.view-list .card-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    /* ── DESTAQUE (1ª notícia grande) ── */
+    .card-destaque {
+      grid-column: span 2;
+    }
+
+    .card-destaque .card-titulo {
+      font-size: 26px;
+      line-height: 1.2;
+    }
+
+    .card-destaque .card-resumo {
+      -webkit-line-clamp: 6;
+      font-size: 15px;
+    }
+
+    @media (max-width: 900px) {
+      .card-destaque { grid-column: span 1; }
+      .card-destaque .card-titulo { font-size: 20px; }
+    }
+
+    /* ── VAZIO ── */
+    #vazio {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 80px 32px;
+      text-align: center;
+      display: none;
+    }
+
+    .vazio-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+      opacity: 0.3;
+    }
+
+    .vazio-titulo {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .vazio-sub {
+      font-size: 14px;
+      color: var(--subtle);
+    }
+
+    /* ── SPINNER ── */
+    .spinner {
+      display: inline-block;
+      width: 13px;
+      height: 13px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .spinner-status {
+      width: 10px;
+      height: 10px;
+      border: 2px solid rgba(230,57,70,0.3);
+      border-top-color: var(--red);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      flex-shrink: 0;
+    }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.8);
+      backdrop-filter: blur(8px);
+      z-index: 500;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      animation: fade-in 0.2s ease;
+    }
+
+    .modal-overlay.open { display: flex; }
+
+    @keyframes fade-in {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 12px;
+      max-width: 680px;
+      width: 100%;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 40px;
+      position: relative;
+      animation: modal-in 0.25s ease;
+    }
+
+    @keyframes modal-in {
+      from { opacity: 0; transform: scale(0.96) translateY(10px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      color: var(--muted);
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .modal-close:hover { color: var(--text); border-color: var(--red); }
+
+    .modal-cat {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 16px;
+    }
+
+    .modal-titulo {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px;
+      font-weight: 700;
+      line-height: 1.25;
+      margin-bottom: 20px;
+      letter-spacing: -0.3px;
+    }
+
+    .modal-divider {
+      height: 1px;
+      background: var(--border);
+      margin-bottom: 20px;
+    }
+
+    .modal-meta {
+      display: flex;
+      gap: 24px;
+      margin-bottom: 24px;
+      font-size: 12px;
+      color: var(--muted);
+      font-family: 'IBM Plex Mono', monospace;
+    }
+
+    .modal-resumo {
+      font-size: 15px;
+      line-height: 1.8;
+      color: #c8c8d8;
+    }
+
+    .modal-footer {
+      margin-top: 32px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .modal-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--red);
+      color: #fff;
+      text-decoration: none;
+      padding: 11px 24px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+
+    .modal-btn:hover { background: var(--red-dim); }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 24px 32px;
+      text-align: center;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      color: var(--subtle);
+      letter-spacing: 1px;
+    }
+
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--subtle); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .header-inner { padding: 0 16px; }
+      .logo-edition { display: none; }
+      .live-badge { display: none; }
+      .stats-bar { padding: 16px 16px 0; }
+      .stats-left { gap: 16px; }
+      .stat-value { font-size: 22px; }
+      #grid { padding: 16px 0 40px; }
+      .nav-inner { padding: 0 16px; }
+      #status { padding: 8px 16px 0; }
+      .modal { padding: 24px; }
+      .modal-titulo { font-size: 22px; }
+      #grid.view-list .card { flex-direction: column; }
+      #grid.view-list .card-top { flex-direction: row; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-mark">📰 Agência <em>Notícias</em></div>
+      <div class="logo-edition">EDIÇÃO DIGITAL</div>
+    </div>
+    <div class="header-actions">
+      <div class="live-badge">
+        <div class="live-dot"></div>
+        <span id="ultimo-update">ATUALIZADO AGORA</span>
+      </div>
+      <button class="btn-coletar" id="btn-coletar" onclick="coletar()">
+        ▶ Coletar agora
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker-label">AO VIVO</div>
+  <div style="overflow:hidden;flex:1">
+    <div class="ticker-track" id="ticker-track">
+      <span class="ticker-item">Carregando manchetes...</span>
+    </div>
+  </div>
+</div>
+
+<!-- NAV TABS -->
+<div class="nav-wrap">
+  <div class="nav-inner">
+    <button class="tab ativo" data-cat="todas" onclick="filtrar('todas', this)">
+      Todas <span class="tab-count" id="cnt-todas">0</span>
+    </button>
+    <button class="tab" data-cat="politica" onclick="filtrar('politica', this)">
+      Política <span class="tab-count" id="cnt-politica">0</span>
+    </button>
+    <button class="tab" data-cat="lula-bolsonaro" onclick="filtrar('lula-bolsonaro', this)">
+      Lula & Bolsonaro <span class="tab-count" id="cnt-lula-bolsonaro">0</span>
+    </button>
+    <button class="tab" data-cat="senado-camara-stf" onclick="filtrar('senado-camara-stf', this)">
+      Senado / Câmara / STF <span class="tab-count" id="cnt-senado-camara-stf">0</span>
+    </button>
+    <button class="tab" data-cat="celebridades" onclick="filtrar('celebridades', this)">
+      Celebridades <span class="tab-count" id="cnt-celebridades">0</span>
+    </button>
+    <button class="tab" data-cat="entretenimento" onclick="filtrar('entretenimento', this)">
+      Entretenimento <span class="tab-count" id="cnt-entretenimento">0</span>
+    </button>
+  </div>
+</div>
+
+<!-- STATS BAR -->
+<div class="stats-bar">
+  <div class="stats-left">
+    <div class="stat-item">
+      <div class="stat-value" id="stat-total">0</div>
+      <div class="stat-label">Notícias</div>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+      <div class="stat-value" id="stat-fontes">0</div>
+      <div class="stat-label">Fontes</div>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+      <div class="stat-value" id="stat-cats">0</div>
+      <div class="stat-label">Categorias</div>
+    </div>
+  </div>
+  <div class="stats-right">
+    <button class="sort-btn ativo" id="sort-recente" onclick="ordenar('recente')">
+      ↓ Mais recentes
+    </button>
+    <button class="sort-btn" id="sort-antigo" onclick="ordenar('antigo')">
+      ↑ Mais antigos
+    </button>
+    <button class="view-btn ativo" id="view-grid" onclick="setView('grid')" title="Grade">⊞</button>
+    <button class="view-btn" id="view-list" onclick="setView('list')" title="Lista">☰</button>
+  </div>
+</div>
+
+<!-- STATUS -->
+<div id="status"></div>
+
+<!-- GRID -->
+<div id="grid"></div>
+
+<!-- VAZIO -->
+<div id="vazio">
+  <div class="vazio-icon">📭</div>
+  <div class="vazio-titulo">Nenhuma notícia encontrada</div>
+  <div class="vazio-sub">Clique em "Coletar agora" para buscar as últimas notícias</div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal" onclick="fecharModal(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="fecharModal()">✕</button>
+    <div class="modal-cat" id="modal-cat"></div>
+    <div class="modal-titulo" id="modal-titulo"></div>
+    <div class="modal-divider"></div>
+    <div class="modal-meta" id="modal-meta"></div>
+    <div class="modal-resumo" id="modal-resumo"></div>
+    <div class="modal-footer">
+      <a class="modal-btn" id="modal-link" href="#" target="_blank">
+        Ver reportagem original →
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  AGÊNCIA NOTÍCIAS &nbsp;·&nbsp; SISTEMA AUTOMATIZADO DE COLETA &nbsp;·&nbsp;
+  ATUALIZAÇÃO A CADA 60MIN
+</footer>
+
+<script>
+  let todas = [];
+  let filtroAtual = 'todas';
+  let ordemAtual  = 'recente';
+  let viewAtual   = 'grid';
+
+  /* ── INICIALIZAÇÃO ── */
+  carregar();
+  setInterval(carregar, 60000);
+
+  /* ── CARREGAR ── */
+  async function carregar() {
+    setStatus('<div class="spinner-status"></div> Atualizando...');
+    try {
+      const res = await fetch('/api/noticias?take=100');
+      const data = await res.json();
+      todas = Array.isArray(data) ? data : [];
+      atualizarCounts();
+      atualizarTicker();
+      atualizarStats();
+      atualizarTimestamp();
+      renderizar(filtradas());
+      setStatus('');
+    } catch (e) {
+      setStatus('⚠ Erro ao carregar notícias');
+    }
+  }
+
+  /* ── COLETAR ── */
+  async function coletar() {
+    const btn = document.getElementById('btn-coletar');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Coletando...';
+    setStatus('<div class="spinner-status"></div> Coleta em andamento, aguarde...');
+    try {
+      await fetch('/api/coletar', { method: 'POST' });
+      setStatus('<div class="spinner-status"></div> Notícias sendo processadas pela IA...');
+      setTimeout(carregar, 12000);
+      setTimeout(carregar, 25000);
+    } catch {
+      setStatus('⚠ Erro ao iniciar coleta');
+    } finally {
+      setTimeout(() => {
+        btn.disabled = false;
+        btn.innerHTML = '▶ Coletar agora';
+      }, 15000);
+    }
+  }
+
+  /* ── FILTRAR ── */
+  function filtrar(cat, el) {
+    filtroAtual = cat;
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('ativo'));
+    el.classList.add('ativo');
+    renderizar(filtradas());
+  }
+
+  /* ── ORDENAR ── */
+  function ordenar(tipo) {
+    ordemAtual = tipo;
+    document.getElementById('sort-recente').classList.toggle('ativo', tipo === 'recente');
+    document.getElementById('sort-antigo').classList.toggle('ativo',  tipo === 'antigo');
+    renderizar(filtradas());
+  }
+
+  /* ── VIEW ── */
+  function setView(v) {
+    viewAtual = v;
+    const grid = document.getElementById('grid');
+    grid.classList.toggle('view-list', v === 'list');
+    document.getElementById('view-grid').classList.toggle('ativo', v === 'grid');
+    document.getElementById('view-list').classList.toggle('ativo', v === 'list');
+    renderizar(filtradas());
+  }
+
+  /* ── FILTRADAS ── */
+  function filtradas() {
+    let lista = filtroAtual === 'todas' ? [...todas] : todas.filter(n => n.categoria === filtroAtual);
+    if (ordemAtual === 'recente') {
+      lista.sort((a, b) => new Date(b.criadoEm || b.dataColeta || 0) - new Date(a.criadoEm || a.dataColeta || 0));
+    } else {
+      lista.sort((a, b) => new Date(a.criadoEm || a.dataColeta || 0) - new Date(b.criadoEm || b.dataColeta || 0));
+    }
+    return lista;
+  }
+
+  /* ── RENDERIZAR ── */
+  function renderizar(lista) {
+    const grid  = document.getElementById('grid');
+    const vazio = document.getElementById('vazio');
+    grid.innerHTML = '';
+
+    if (!lista?.length) {
+      vazio.style.display = 'block';
+      return;
+    }
+    vazio.style.display = 'none';
+
+    lista.forEach((n, i) => {
+      const data  = n.criadoEm || n.dataColeta
+        ? new Date(n.criadoEm || n.dataColeta).toLocaleString('pt-BR', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' })
+        : '—';
+      const catClass = 'cat-' + (n.categoria || 'default').replace(/[^a-z0-9-]/g, '-');
+      const isDestaque = i === 0 && viewAtual === 'grid';
+      const num = String(i + 1).padStart(2, '0');
+
+      if (viewAtual === 'list') {
+        grid.innerHTML += `
+          <div class="card" onclick="abrirModal(${n.id})" style="animation-delay:${Math.min(i*0.04,0.5)}s">
+            <div class="card-top">
+              <span class="card-cat ${catClass}">${n.categoria}</span>
+              <span class="card-num">#${num}</span>
+            </div>
+            <div class="card-body">
+              <div class="card-titulo">${n.titulo}</div>
+              <div class="card-resumo">${n.resumo}</div>
+              <div class="card-footer">
+                <div class="card-meta">
+                  <span class="card-fonte">${n.fonte}</span>
+                  <span class="card-data">${data}</span>
+                </div>
+                <a class="card-link" href="${n.url}" target="_blank" onclick="event.stopPropagation()">
+                  Ver original →
+                </a>
+              </div>
+            </div>
+          </div>`;
+      } else {
+        grid.innerHTML += `
+          <div class="card ${isDestaque ? 'card-destaque' : ''}" onclick="abrirModal(${n.id})" style="animation-delay:${Math.min(i*0.04,0.6)}s">
+            <div class="card-top">
+              <span class="card-cat ${catClass}">${n.categoria}</span>
+              <span class="card-num">#${num}</span>
+            </div>
+            <div class="card-titulo">${n.titulo}</div>
+            <div class="card-resumo">${n.resumo}</div>
+            <div class="card-footer">
+              <div class="card-meta">
+                <span class="card-fonte">${n.fonte}</span>
+                <span class="card-data">${data}</span>
+              </div>
+              <a class="card-link" href="${n.url}" target="_blank" onclick="event.stopPropagation()">
+                Ver →
+              </a>
+            </div>
+          </div>`;
+      }
+    });
+  }
+
+  /* ── MODAL ── */
+  function abrirModal(id) {
+    const n = todas.find(x => x.id === id);
+    if (!n) return;
+
+    const data = n.criadoEm || n.dataColeta
+      ? new Date(n.criadoEm || n.dataColeta).toLocaleString('pt-BR', { weekday:'long', day:'2-digit', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit' })
+      : '—';
+
+    document.getElementById('modal-cat').textContent    = n.categoria?.toUpperCase();
+    document.getElementById('modal-titulo').textContent = n.titulo;
+    document.getElementById('modal-meta').innerHTML     = `<span>📰 ${n.fonte}</span><span>🕐 ${data}</span>`;
+    document.getElementById('modal-resumo').textContent = n.resumo;
+    document.getElementById('modal-link').href          = n.url;
+    document.getElementById('modal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function fecharModal(e) {
+    if (e && e.target !== document.getElementById('modal')) return;
+    document.getElementById('modal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') fecharModal(); });
+
+  /* ── TICKER ── */
+  function atualizarTicker() {
+    if (!todas.length) return;
+    const items = todas.slice(0, 10).map(n =>
+      `<span class="ticker-item">${n.titulo}</span><span class="ticker-sep">·</span>`
+    ).join('');
+    const track = document.getElementById('ticker-track');
+    track.innerHTML = items + items;
+  }
+
+  /* ── COUNTS ── */
+  function atualizarCounts() {
+    const cats = ['todas','politica','lula-bolsonaro','senado-camara-stf','celebridades','entretenimento'];
+    cats.forEach(cat => {
+      const el = document.getElementById('cnt-' + cat);
+      if (!el) return;
+      const n = cat === 'todas' ? todas.length : todas.filter(x => x.categoria === cat).length;
+      el.textContent = n;
+    });
+  }
+
+  /* ── STATS ── */
+  function atualizarStats() {
+    document.getElementById('stat-total').textContent = todas.length;
+    const fontes = new Set(todas.map(n => n.fonte)).size;
+    const cats   = new Set(todas.map(n => n.categoria)).size;
+    document.getElementById('stat-fontes').textContent = fontes;
+    document.getElementById('stat-cats').textContent   = cats;
+  }
+
+  /* ── TIMESTAMP ── */
+  function atualizarTimestamp() {
+    const agora = new Date().toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' });
+    document.getElementById('ultimo-update').textContent = `ATUALIZADO ÀS ${agora}`;
+  }
+
+  /* ── STATUS ── */
+  function setStatus(html) {
+    document.getElementById('status').innerHTML = html;
+  }
+</script>
+
+<footer style="font-family:'DM Sans',sans-serif;background:linear-gradient(135deg,#1a0a0e 0%,#2d0f1a 50%,#1a0a0e 100%);color:#f5e6ec;border-radius:16px;overflow:hidden;position:relative;margin:2rem auto;max-width:1200px;">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@400;500;600&display=swap');
+.sqr-footer-bar{position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#e8738a,#d4537e,#c0392b,#e8738a);background-size:200% auto;animation:sqrShimmer 3s linear infinite;}
+@keyframes sqrShimmer{0%{background-position:0% center}100%{background-position:200% center}}
+.sqr-top{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid rgba(212,83,126,0.2);}
+.sqr-col{padding:2rem;}
+.sqr-col:first-child{border-right:1px solid rgba(212,83,126,0.2);}
+.sqr-label{font-size:10px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#d4537e;margin-bottom:.75rem;}
+.sqr-title{font-family:'DM Serif Display',serif;font-size:1.3rem;font-style:italic;color:#f9d4e2;margin-bottom:.75rem;line-height:1.3;}
+.sqr-desc{font-size:.88rem;color:#c9a0b4;line-height:1.6;margin-bottom:1.25rem;}
+.sqr-phone{font-size:1rem;font-weight:600;color:#f9d4e2;letter-spacing:1px;margin-bottom:1rem;display:flex;align-items:center;gap:8px;}
+.sqr-dot{width:7px;height:7px;background:#d4537e;border-radius:50%;animation:sqrPulse 2s ease-in-out infinite;}
+@keyframes sqrPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.7)}}
+.sqr-btn{display:inline-flex;align-items:center;gap:8px;background:#d4537e;color:#fff;font-size:.82rem;font-weight:600;letter-spacing:.5px;padding:.6rem 1.25rem;border-radius:50px;text-decoration:none;transition:background .2s,transform .15s;}
+.sqr-btn:hover{background:#e8738a;transform:scale(1.03);}
+.sqr-pill{background:rgba(212,83,126,0.15);color:#e8738a;font-size:11px;font-weight:600;padding:4px 12px;border-radius:50px;border:1px solid rgba(212,83,126,0.3);display:inline-block;margin:3px;}
+.sqr-bottom{padding:1.25rem 2rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;}
+.sqr-credit{font-size:.78rem;color:#9a6678;line-height:1.5;}
+.sqr-credit strong{color:#c9a0b4;font-weight:500;}
+.sqr-credit a{color:#d4537e;text-decoration:none;font-weight:600;}
+.sqr-credit a:hover{color:#e8738a;}
+.sqr-eyes{font-size:.78rem;color:#9a6678;font-style:italic;display:flex;align-items:center;gap:6px;}
+.sqr-eyes span{font-size:1rem;animation:sqrPeek 4s ease-in-out infinite;}
+@keyframes sqrPeek{0%,100%{transform:rotate(0deg)}20%{transform:rotate(-8deg)}40%{transform:rotate(8deg)}60%{transform:rotate(0deg)}}
+</style>
+<div class="sqr-footer-bar"></div>
+<div class="sqr-top">
+  <div class="sqr-col">
+    <p class="sqr-label">Publicidade</p>
+    <h3 class="sqr-title">Quer anunciar com a gente?</h3>
+    <p class="sqr-desc">Fale com nossa equipe e coloque sua marca no maior portal de fofocas e entretenimento. Retornamos rapidinho!</p>
+    <div class="sqr-phone"><span class="sqr-dot"></span>(11) 97666-1297</div>
+    <a class="sqr-btn" href="https://wa.me/5511976661297?text=Ol%C3%A1!%20Gostaria%20de%20anunciar%20no%20Ser%C3%A1%20Que%20Rolou%3F" target="_blank">
+      <svg width="16" height="16" fill="#fff" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      Deixar minha mensagem
+    </a>
+  </div>
+  <div class="sqr-col">
+    <p class="sqr-label">Sobre o site</p>
+    <h3 class="sqr-title" style="font-size:1.05rem;">Fique por dentro de tudo — antes de todo mundo.</h3>
+    <p class="sqr-desc">O <strong style="color:#f9d4e2;">Será Que Rolou?</strong> reúne o melhor do entretenimento, celebridades, moda, cinema e os babados mais quentes da internet. Atualizado em tempo real.</p>
+    <div>
+      <span class="sqr-pill">⭐ Celebridades</span>
+      <span class="sqr-pill">👗 Moda</span>
+      <span class="sqr-pill">🎬 Cinema</span>
+      <span class="sqr-pill">💬 Babados</span>
+    </div>
+  </div>
+</div>
+<div class="sqr-bottom">
+  <div class="sqr-credit">
+    <strong>Será Que Rolou?</strong> foi desenvolvido por
+    <a href="https://strsoftware.com.br" target="_blank">Strsoftware.com.br</a>
+    &nbsp;•&nbsp; uma das marcas da <strong>Cotaweb Seguros</strong>
+  </div>
+  <div class="sqr-eyes"><span>👀</span> De olho em tudo, sempre.</div>
+</div>
+</footer>
+
+</body>
+</html>
