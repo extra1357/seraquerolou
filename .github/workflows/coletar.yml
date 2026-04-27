@@ -1,0 +1,19 @@
+name: Coletar Noticias
+
+on:
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
+
+jobs:
+  coletar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Politica
+        run: curl -s "https://agencia-ts.vercel.app/api/coletar?categoria=politica"
+      - name: Celebridades
+        run: curl -s "https://agencia-ts.vercel.app/api/coletar?categoria=celebridades"
+      - name: Filmes
+        run: curl -s "https://agencia-ts.vercel.app/api/coletar?categoria=filmes"
+      - name: Moda
+        run: curl -s "https://agencia-ts.vercel.app/api/coletar?categoria=moda"

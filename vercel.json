@@ -13,23 +13,5 @@
       "src": "/(.*)",
       "dest": "/public/$1"
     }
-  ],
-  "crons": [
-    {
-      "path": "/api/coletar?categoria=politica",
-      "schedule": "0 * * * *"
-    },
-    {
-      "path": "/api/coletar?categoria=celebridades",
-      "schedule": "10 * * * *"
-    },
-    {
-      "path": "/api/coletar?categoria=filmes",
-      "schedule": "20 * * * *"
-    },
-    {
-      "path": "/api/coletar?categoria=moda",
-      "schedule": "30 * * * *"
-    }
   ]
 }
