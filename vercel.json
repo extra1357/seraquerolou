@@ -1,8 +1,35 @@
 {
   "version": 2,
   "routes": [
-    { "src": "/api/noticias", "dest": "/api/noticias.ts" },
-    { "src": "/api/coletar", "dest": "/api/coletar.ts" },
-    { "src": "/(.*)", "dest": "/public/$1" }
+    {
+      "src": "/api/noticias",
+      "dest": "/api/noticias.ts"
+    },
+    {
+      "src": "/api/coletar",
+      "dest": "/api/coletar.ts"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/public/$1"
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/coletar?categoria=politica",
+      "schedule": "0 * * * *"
+    },
+    {
+      "path": "/api/coletar?categoria=celebridades",
+      "schedule": "10 * * * *"
+    },
+    {
+      "path": "/api/coletar?categoria=filmes",
+      "schedule": "20 * * * *"
+    },
+    {
+      "path": "/api/coletar?categoria=moda",
+      "schedule": "30 * * * *"
+    }
   ]
 }
