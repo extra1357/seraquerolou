@@ -26,24 +26,16 @@ export const FONTES: Record<string, Fonte[]> = {
     { url: 'https://g1.globo.com/rss/g1/politica/',                  nome: 'G1' },
     { url: 'https://feeds.folha.uol.com.br/poder/rss091.xml',        nome: 'Folha de S.Paulo' },
   ],
-  'senado-camara-stf': [
-    { url: 'https://agenciabrasil.ebc.com.br/rss/politica/feed.xml', nome: 'Agencia Brasil' },
-    { url: 'https://feeds.folha.uol.com.br/poder/rss091.xml',        nome: 'Folha de S.Paulo' },
-  ],
   celebridades: [
     { url: 'https://feeds.folha.uol.com.br/ilustrada/rss091.xml',    nome: 'Folha Ilustrada' },
     { url: 'https://papelpop.com/feed/',                              nome: 'PapelPop' },
-  ],
-  entretenimento: [
-    { url: 'https://papelpop.com/feed/',                              nome: 'PapelPop' },
-    { url: 'https://feeds.folha.uol.com.br/ilustrada/rss091.xml',    nome: 'Folha Ilustrada' },
   ],
   filmes: [
     { url: 'https://cinepop.com.br/feed/',                            nome: 'CinePOP' },
     { url: 'https://feeds.folha.uol.com.br/ilustrada/rss091.xml',    nome: 'Folha Ilustrada' },
   ],
   moda: [
-    { url: 'https://feeds.folha.uol.com.br/equilibrioesaude/rss091.xml', nome: 'Folha Equilíbrio' },
+    { url: 'https://feeds.folha.uol.com.br/equilibrioesaude/rss091.xml', nome: 'Folha Equilibrio' },
     { url: 'https://papelpop.com/feed/',                              nome: 'PapelPop' },
   ],
 };
@@ -85,15 +77,12 @@ async function parseRSS(buffer: Buffer): Promise<{ titulo: string; url: string; 
   const xml = (encoding === 'ISO-8859-1' || encoding === 'LATIN1' || encoding === 'ISO-8859-15')
     ? iconv.decode(buffer, 'iso-8859-1')
     : buffer.toString('utf8');
-
   const result = await xml2js.parseStringPromise(xml, {
     explicitArray: false,
     ignoreAttrs: false,
   });
-
   const itens = result?.rss?.channel?.item ?? result?.feed?.entry ?? [];
   const lista = Array.isArray(itens) ? itens : [itens];
-
   return lista.slice(0, 8).map((item: any) => {
     const titulo = limparTexto(toString(item.title));
     const urlRaw = item.link?.$ ? item.link.$['href'] : (item.link ?? item.guid?._ ?? item.guid ?? '');
