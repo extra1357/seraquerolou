@@ -16,7 +16,7 @@ export async function executarColeta(): Promise<void> {
           if (existe) continue;
           const resumo = await reescreverNoticia(n.titulo, n.texto || n.titulo, n.categoria);
           if (!resumo) continue;
-          const imagemUrl = await buscarFoto(n.categoria);
+          const imagemUrl = await buscarFoto(n.categoria, n.titulo);
           await prisma.noticia.upsert({
             where: { url: n.url },
             update: {},
