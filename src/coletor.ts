@@ -2,6 +2,7 @@ import "dotenv/config";
 import prisma from './prisma';
 import { FONTES, coletarFonte } from './scraper';
 import { reescreverNoticia } from './groq';
+import { buscarFoto } from './pexels';
 
 export async function executarColeta(): Promise<void> {
   console.log('=== Iniciando coleta de noticias ===');
@@ -11,8 +12,11 @@ export async function executarColeta(): Promise<void> {
       let salvas = 0;
       for (const n of noticias) {
         try {
+          const existe = await prisma.noticia.findUnique({ where: { url: n.url } });
+          if (existe) continue;
           const resumo = await reescreverNoticia(n.titulo, n.texto || n.titulo, n.categoria);
           if (!resumo) continue;
+          const imagemUrl = await buscarFoto(n.categoria);
           await prisma.noticia.upsert({
             where: { url: n.url },
             update: {},
@@ -22,6 +26,7 @@ export async function executarColeta(): Promise<void> {
               fonte:     n.fonte,
               resumo,
               categoria: n.categoria,
+              imagemUrl,
             },
           });
           salvas++;

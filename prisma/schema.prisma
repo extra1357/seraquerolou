@@ -14,5 +14,6 @@ model Noticia {
   fonte     String
   resumo    String
   categoria String
+  imagemUrl String?
   criadoEm DateTime @default(now())
 }
