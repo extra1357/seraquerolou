@@ -1,4 +1,3 @@
-import "dotenv/config";
 import { executarColeta } from './coletor';
 executarColeta().then(() => {
   console.log('Coleta finalizada!');
